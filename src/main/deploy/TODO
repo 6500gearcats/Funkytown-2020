@@ -1,0 +1,45 @@
+✓ Drive the robot
+
+✓ Spin the intake
+
+✓ Bring out the intake
+
+Spin the flywheel at different RPMs (If two wheel, change angle of flywheel)
+
+Aim
+
+Spin the winch
+
+Read and interpret sensor data
+
+Run the conveyor
+
+Activate climb brakes
+
+Color wheel spinner extension
+
+Color wheel spinning
+
+Color wheel spin monitoring & control
+
+Communication between RoboRio and Driver Station
+
+Communication between RPi and RoboRio
+
+Driving up to aim
+(AI version)
+(Geometry version)
+
+Deciding RPM/angle
+
+Lookup table
+
+Auto routines
+
+
+(Reach goals)
+Picking up balls routine
+
+Automated climbing line up and initiation
+
+Stabilize with gyro
