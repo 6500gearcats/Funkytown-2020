@@ -71,6 +71,8 @@ public class Constants
     public final static int WINCH_SERVO_ANGLE_BRAKE = 0;
     public final static int WINCH_SERVO_ANGLE_RELEASE = 0;
 
+    public final static int FLYWHEEL_MOTOR_A = 0;
+
     // Pneumatics Constants
     public final static int PNEUMATICS_PCM_ID = 10;
 
