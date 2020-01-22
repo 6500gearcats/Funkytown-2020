@@ -1,13 +1,18 @@
 package frc;
 
 import org.usfirst.frc.team6500.trc.util.TRCTypes;
+import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.Encoder;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class SingleFlywheel
 {
+	private PIDController pidc;
 	private SpeedController drive;
 	private Encoder encoder;
+	private FlywheelDriver driver;
+	private AtomicBoolean atSpeed;
 	private double optimalSpeed;
 
 	/**
@@ -20,26 +25,26 @@ public class SingleFlywheel
 	{
 		drive = TRCTypes.controllerTypeToObject(port, controller);
 		encoder = new Encoder(port, 0);
+		pidc = new PIDController(0.5, 0.5, 0.1);
+		driver = new FlywheelDriver();
 		this.optimalSpeed = optimalSpeed;
+		this.atSpeed = new AtomicBoolean(false);
 	}
 
 	public void spinUp()
 	{
-		drive.set(optimalSpeed); // TODO: not correct!
+		driver.start();
 	}
 
 	public void spinDown()
 	{
-		drive.stopMotor();
+		driver.interrupt();
 	}
 
 	/**
 	 *	@return if flywheel is spinning at optimal speed
 	 */
-	public boolean atSpeed()
-	{
-		
-	}
+	public boolean atSpeed() { return this.atSpeed.get(); }
 
 	/*
 	 *	This is a temporary class to do demonstation on.
@@ -47,21 +52,26 @@ public class SingleFlywheel
 	 *	that can't be done right now, so in the meantime, this
 	 *	will work.
 	 */
-	/*
-	private class FlywheelDrive extends java.lang.Thread
+	private class FlywheelDriver extends java.lang.Thread
 	{
 		@Override
 		public void run()
 		{
-			drive.set()
+			pidc.setSetpoint(optimalSpeed);
+			while (true)
+			{
+				double calc = pidc.calculate(encoder.getRaw());
+				drive.set(calc);
+				atSpeed.set(pidc.atSetpoint());
+			}
 		}
 
 		@Override
-		public void stop()
+		public void interrupt()
 		{
+			super.interrupt();
+			atSpeed.set(false);
 			drive.stopMotor();
-			super.stop();
 		}
 	}
-	*/
 }
