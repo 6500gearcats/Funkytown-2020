@@ -9,6 +9,7 @@ import org.usfirst.frc.team6500.trc.util.TRCTypes.*;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.Encoder;
 
 
 public class Robot extends TimedRobot
@@ -17,6 +18,7 @@ public class Robot extends TimedRobot
     Drive drive;
     Intake intake;
     Winch winch;
+    SingleFlywheel flywheel;
 
     /**
      * Code here will run once as soon as the robot starts
@@ -33,15 +35,17 @@ public class Robot extends TimedRobot
         TRCDriveSync.requestChangeState(DriveSyncState.Teleop);
         ArcadeControlTest.initializeArcadeControlTest(drive);
 
+/*
         // Setup: Systems: Mechanisms
         TRCPneumaticSystem.setupPneumatics(Constants.PNEUMATICS_PCM_ID);
         intake = new Intake(Constants.INTAKE_MOTOR_PORTS, Constants.INTAKE_MOTOR_TYPES, Constants.INTAKE_PNEUMATICS_PORTS);
         winch = new Winch(Constants.WINCH_MOTOR_PORTS, Constants.WINCH_MOTOR_TYPES, Constants.WINCH_SERVO_PORT_A);
-
+*/
+        flywheel = new SingleFlywheel(Constants.FLYWHEEL_MOTOR_A, Constants.FLYWHEEL_SPEED);
+        /*
         // Setup: Input
         TRCDriveInput.initializeDriveInput(Constants.INPUT_PORTS, Constants.INPUT_TYPES, Constants.SPEED_BASE, Constants.SPEED_BOOST);
 
-        /*
         TRCDriveInput.bindButtonPress(Constants.INPUT_DRIVER_PORT, Constants.INPUT_DRIVE_TURN_LEFT_SLOW, ArcadeControlTest::INPUT_DRIVE_TURN_LEFT_SLOW);
         TRCDriveInput.bindButtonPress(Constants.INPUT_DRIVER_PORT, Constants.INPUT_DRIVE_TURN_LEFT_FAST, ArcadeControlTest::INPUT_DRIVE_TURN_LEFT_FAST);
         TRCDriveInput.bindButtonPress(Constants.INPUT_DRIVER_PORT, Constants.INPUT_DRIVE_TURN_RIGHT_SLOW, ArcadeControlTest::INPUT_DRIVE_TURN_RIGHT_SLOW);
@@ -53,7 +57,6 @@ public class Robot extends TimedRobot
         TRCDriveInput.bindButtonPress(Constants.INPUT_DRIVER_PORT, Constants.INPUT_DRIVE_BACKWARD_FAST, ArcadeControlTest::INPUT_DRIVE_BACKWARD_FAST);
 
         TRCDriveInput.bindButtonAbsence(Constants.INPUT_DRIVER_PORT, Constants.INPUT_DRIVE_BUTTONS_MANUAL, ArcadeControlTest::STOP);
-        */
 
         TRCDriveInput.bindButtonPress(Constants.INPUT_GUNNER_PORT, Constants.INPUT_INTAKE_DROP, intake::dropIntake);
         TRCDriveInput.bindButtonPress(Constants.INPUT_GUNNER_PORT, Constants.INPUT_INTAKE_RAISE, intake::raiseIntake);
@@ -62,6 +65,7 @@ public class Robot extends TimedRobot
 
         TRCDriveInput.bindButtonPress(Constants.INPUT_GUNNER_PORT, Constants.INPUT_WINCH_BRAKE, winch::brake);
         TRCDriveInput.bindButtonPress(Constants.INPUT_GUNNER_PORT, Constants.INPUT_WINCH_RELEASE, winch::release);
+*/
     }
 
     @Override

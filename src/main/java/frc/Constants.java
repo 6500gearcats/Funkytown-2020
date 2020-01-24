@@ -16,7 +16,7 @@ public class Constants
     public static final double INPUT_DRIVE_DEADBAND     = 0.1;
     public static final int INPUT_DRIVE_SLOW            = (INPUT_TYPES[INPUT_DRIVER_PORT] == ControllerType.Xbox360) ? 5 : 2;
     public static final Object INPUT_DRIVE_BUTTONS[]    = {INPUT_DRIVE_SLOW};
-
+/*
     public static final int INPUT_INTAKE_DROP           = 0;
     public static final int INPUT_INTAKE_RAISE          = 0;
     public static final int INPUT_INTAKE_PULLIN         = 0;
@@ -24,7 +24,7 @@ public class Constants
 
     public static final int INPUT_WINCH_BRAKE           = 0;
     public static final int INPUT_WINCH_RELEASE         = 0;
-
+*/
 
     /*
     public static final int INPUT_DRIVE_TURN_LEFT_SLOW  = 1;
@@ -53,28 +53,31 @@ public class Constants
 	public final static int DRIVE_WHEEL_FRONTRIGHT              = 2;
     public final static int DRIVE_WHEEL_REARRIGHT               = 1;
     public final static int DRIVE_WHEEL_PORTS[]                 = {DRIVE_WHEEL_FRONTLEFT, DRIVE_WHEEL_REARLEFT, DRIVE_WHEEL_FRONTRIGHT, DRIVE_WHEEL_REARRIGHT};
-    public final static SpeedControllerType DRIVE_WHEEL_TYPES[] = {SpeedControllerType.CANTalonSRX, SpeedControllerType.CANTalonSRX, SpeedControllerType.CANTalonSRX, SpeedControllerType.CANTalonSRX};
+    public final static SpeedControllerType DRIVE_WHEEL_TYPES[] = {SpeedControllerType.PWMVictorSPX, SpeedControllerType.PWMVictorSPX, SpeedControllerType.PWMVictorSPX, SpeedControllerType.PWMVictorSPX};
     public final static boolean DRIVE_WHEEL_INVERTS[]           = {true, true, true, true};
 
-
+/*
     // Mechanism Constants
     public final static int INTAKE_MOTOR_A = 0;
     public final static int INTAKE_MOTOR_PORTS[] = {INTAKE_MOTOR_A};
     public final static SpeedControllerType INTAKE_MOTOR_TYPES[] = {SpeedControllerType.CANSparkMax};
     public final static int INTAKE_PNEUMATICS_A = 0;
     public final static int INTAKE_PNEUMATICS_PORTS[] = {INTAKE_PNEUMATICS_A};
-
+*/
+    /*
     public final static int WINCH_MOTOR_A = 0;
     public final static int WINCH_MOTOR_PORTS[] = {WINCH_MOTOR_A};
     public final static SpeedControllerType WINCH_MOTOR_TYPES[] = {SpeedControllerType.CANSparkMax};
     public final static int WINCH_SERVO_PORT_A = 0;
+    */
     public final static int WINCH_SERVO_ANGLE_BRAKE = 0;
     public final static int WINCH_SERVO_ANGLE_RELEASE = 0;
 
-    public final static int FLYWHEEL_MOTOR_A = 0;
+    public final static int FLYWHEEL_MOTOR_A = 6;
+    public final static double FLYWHEEL_SPEED = 2;
 
     // Pneumatics Constants
-    public final static int PNEUMATICS_PCM_ID = 10;
+    //public final static int PNEUMATICS_PCM_ID = 10;
 
 
     // PDP Constants
