@@ -1,37 +1,38 @@
 package frc;
 
 import org.usfirst.frc.team6500.trc.util.TRCTypes;
-import edu.wpi.first.wpilibj.controller.PIDController;
-import edu.wpi.first.wpilibj.SpeedController;
-import edu.wpi.first.wpilibj.Encoder;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import com.revrobotics.*;
 
 /**
  *	Control a single flywheel mechanism
  */
 public class SingleFlywheel
 {
-	private PIDController pidc;
-	private SpeedController drive;
-	private Encoder encoder;
+	private CANSparkMax drive;
 	private FlywheelDriver driver;
 	private AtomicBoolean atSpeed;
 	private double optimalSpeed;
 
 	/**
 	 *	Initialize a new SingleFlywheel
-	 *	@param port port number of the motor driving the device
+	 *	@param port port number of the SparkMax driving the Neo
 	 *	@param controller the type of SpeedController
 	 *	@param optimalSpeed the speed at which the motor should run in rotations per second
 	 */
-	public SingleFlywheel(int port, TRCTypes.SpeedControllerType controller, double optimalSpeed)
+	public SingleFlywheel(int port, double optimalSpeed)
 	{
-		drive = TRCTypes.controllerTypeToObject(port, controller);
-		encoder = new Encoder(port, 0);
-		pidc = new PIDController(0.5, 0.5, 0.1);
+		drive = new CANSparkMax(port, CANSparkMaxLowLevel.MotorType.kBrushless);
 		driver = new FlywheelDriver();
 		this.optimalSpeed = optimalSpeed;
 		this.atSpeed = new AtomicBoolean(false);
+		/* // code here to tune PID controller
+		CANPIDController pidc = drive.getPIDController();
+		pidc.setP(0.2);
+		pidc.setI(0.2);
+		pidc.setD(0.5);
+		*/
 	}
 
 	/**
@@ -66,13 +67,9 @@ public class SingleFlywheel
 		@Override
 		public void run()
 		{
-			pidc.setSetpoint(optimalSpeed);
-			while (true)
-			{
-				double calc = pidc.calculate(encoder.getRaw());
-				drive.set(calc);
-				atSpeed.set(pidc.atSetpoint());
-			}
+			CANPIDController pidc = drive.getPIDController();
+			pidc.setReference(optimalSpeed, ControlType.kVelocity);
+			atSpeed.set(pidc.getIAccum() >= pidc.getIZone()); // TODO: problably not right
 		}
 
 		@Override
