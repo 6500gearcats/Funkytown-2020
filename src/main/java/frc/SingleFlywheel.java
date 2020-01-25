@@ -1,6 +1,5 @@
 package frc;
 
-import org.usfirst.frc.team6500.trc.util.TRCTypes;
 import com.revrobotics.*;
 
 /**
