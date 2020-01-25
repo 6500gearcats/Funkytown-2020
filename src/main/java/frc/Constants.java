@@ -25,7 +25,6 @@ public class Constants
     public static final int INPUT_WINCH_BRAKE           = 0;
     public static final int INPUT_WINCH_RELEASE         = 0;
 
-
     /*
     public static final int INPUT_DRIVE_TURN_LEFT_SLOW  = 1;
     public static final int INPUT_DRIVE_TURN_LEFT_FAST  = 5;

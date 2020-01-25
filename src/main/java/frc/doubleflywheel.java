@@ -1,86 +1,66 @@
 package frc;
 
-import org.usfirst.frc.team6500.trc.systems.TRCDirectionalSystem;
-import org.usfirst.frc.team6500.trc.util.TRCTypes.SpeedControllerType;
+import com.revrobotics.*;
 
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANEncoder;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+/**
+ *	Control a single flywheel mechanism
+ */
+public class DoubleFlywheel
+{
+    private CANSparkMax drive1;
+    private CANSparkMax drive2;
+	private double optimalSpeed;
 
-public class doubleflywheel extends TRCDirectionalSystem {
-    private boolean isShooting;
-    private int num_balls_loaded;
-    private int target_velocity;
-    private double curren_velocity;
-    private CANSparkMax m_motor;
-    private CANEncoder m_encoder;
+	/**
+	 *	Initialize a new SingleFlywheel
+	 *	@param port port number of the SparkMax driving the Neo
+	 *	@param optimalSpeed the speed at which the motor should run in rotations per second
+	 */
+	public DoubleFlywheel(int port1, int port2, double optimalSpeed)
+	{
+        drive1 = new CANSparkMax(port1, CANSparkMaxLowLevel.MotorType.kBrushless);
+        drive2 = new CANSparkMax(port2, CANSparkMaxLowLevel.MotorType.kBrushless);
+		this.optimalSpeed = optimalSpeed;
+		/* // code here to tune PID controller
+		CANPIDController pidc = drive.getPIDController();
+		pidc.setP(0.2);
+		pidc.setI(0.2);
+		pidc.setD(0.5);
+		*/
+	}
 
-    // Not sure what this is used for saw it in documentation
-    private static final int deviceID = 1;
+	/**
+	 *	Start and spin flywheel up to optimal speed
+	 */
+	public void spinUp()
+	{
+        drive1.getPIDController().setReference(optimalSpeed, ControlType.kVelocity);
+        drive2.getPIDController().setReference(optimalSpeed, ControlType.kVelocity);
+	}
 
+	/**
+	 *	Stop motor power and allow flywheel to spin down
+	 */
+	public void spinDown()
+	{
+        drive1.stopMotor();
+        drive2.stopMotor();
+	}
 
-    public doubleflywheel(int[] motorPorts, SpeedControllerType[] motorTypes, boolean balanceInvert, double dFSpeed, double dRSpeed) {
-        super(motorPorts, motorTypes, balanceInvert, dFSpeed, dRSpeed);
-        // TODO Auto-generated constructor stub
-
-        this.m_motor = new CANSparkMax(deviceID, MotorType.kBrushless);
-        this.m_motor.restoreFactoryDefaults();
-        this.m_encoder = m_motor.getEncoder();
-    }
-
-    /**
-     * 
-     */
-    public void shoot()
-    {
-        this.isShooting = true;
-
-        while(true)
-        {
-            adjust_speed();
-            if(isShooting)
-            {
-                // run conveyer
-            }else{
-                this.m_motor.setVoltage(this.target_velocity);
-                // Tick clock to set velocity
-            }
-            if(this.num_balls_loaded == 0)
-            {
-                break;
-            }
-        }
-        
-        // Find a way to keep the spark max to increase vultage input into the motor
-    }
-
-    
-
-    /**
-     * As each ball shoots out, the speed of the wheel slows, so this takes the rpm of the neo motor before shooting
-     * We delay the sparkmax before shooting and it will automatically bring the motor back up to speed
-     * The spark max(Controls voltage input into motor) takes input from the encoder(measures the rotations in the motor) 
-     *      - we program the spak max to tell it when to send in vultage based on the encoder info
-     */
-    public boolean adjust_speed()
-    {
-        if(this.readEncoderVelocity() != curren_velocity)
-        {
-            return false;
-        }else{
+	/**
+	 *	@return if flywheel is spinning at optimal speed
+	 */
+	public boolean atSpeed()
+	{
+        if(drive1.getPIDController().getIAccum() == this.optimalSpeed && drive2.getPIDController().getIAccum() == this.optimalSpeed){
             return true;
+        }else{
+            return false;
         }
-
     }
-
     
-    /**
-     * Literaly finds the encoder rmp output
-     * @return rmp output(double)
-     */
-    public double readEncoderVelocity()
+    public void runConveyer()
     {
-        return this.m_encoder.getVelocity();
+        
     }
-    
 }
