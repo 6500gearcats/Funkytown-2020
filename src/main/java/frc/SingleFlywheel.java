@@ -47,5 +47,8 @@ public class SingleFlywheel
 	/**
 	 *	@return if flywheel is spinning at optimal speed
 	 */
-	public boolean atSpeed() { return drive.getPIDController().getIAccum() >= drive.getPIDController().getIZone(); }
+	public boolean atSpeed() 
+	{
+		return drive.getPIDController().getIAccum() >= drive.getPIDController().getIZone();
+	}
 }
