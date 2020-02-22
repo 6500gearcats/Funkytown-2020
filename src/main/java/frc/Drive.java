@@ -1,10 +1,10 @@
 package frc;
 
 
-import org.usfirst.frc.team6500.trc.wrappers.systems.drives.TRCDifferentialDrive;
-import org.usfirst.frc.team6500.trc.util.TRCTypes.*;
-import org.usfirst.frc.team6500.trc.util.TRCDriveParams;
-import org.usfirst.frc.team6500.trc.util.TRCSpeed;
+import frc.team6500.trc.wrappers.systems.drives.TRCDifferentialDrive;
+import frc.team6500.trc.util.TRCTypes.*;
+import frc.team6500.trc.util.TRCDriveParams;
+import frc.team6500.trc.util.TRCSpeed;
 
 
 public class Drive extends TRCDifferentialDrive
@@ -73,5 +73,13 @@ public class Drive extends TRCDifferentialDrive
         super.tankDrive(filter(dps));
     }
 
-    
+    public void setLeftVolts(double volts)
+    {
+        this.leftMotor.setVoltage(volts);
+    }
+
+    public void setRightVolts(double volts)
+    {
+        this.rightMotor.setVoltage(volts);
+    }
 }

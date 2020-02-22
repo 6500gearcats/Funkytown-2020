@@ -4,7 +4,7 @@ plugins {
     id "de.undercouch.download" version "3.4.3"
 }
 
-def TRCversion = "2020.0.0"
+def TRCversion = "2020.2.0"
 
 try {
     download {

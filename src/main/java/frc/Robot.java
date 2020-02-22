@@ -1,22 +1,42 @@
 package frc;
 
 
-import org.usfirst.frc.team6500.trc.auto.TRCDriveSync;
-import org.usfirst.frc.team6500.trc.systems.TRCDriveInput;
-import org.usfirst.frc.team6500.trc.systems.TRCPneumaticSystem;
-import org.usfirst.frc.team6500.trc.util.TRCNetworkData;
-import org.usfirst.frc.team6500.trc.util.TRCTypes.*;
-
+import frc.team6500.trc.auto.TRCAutoManager;
+import frc.team6500.trc.auto.TRCAutoPath;
+import frc.team6500.trc.auto.TRCDriveSync;
+import frc.team6500.trc.systems.TRCPneumaticSystem;
+import frc.team6500.trc.util.TRCDriveParams;
+import frc.team6500.trc.util.TRCInputManager;
+import frc.team6500.trc.util.TRCNetworkData;
+import frc.team6500.trc.util.TRCRobotManager;
+import frc.team6500.trc.util.TRCTypes.*;
+import frc.team6500.trc.wrappers.sensors.TRCEncoderSet;
+import frc.team6500.trc.wrappers.sensors.TRCGyroBase;
+import frc.team6500.trc.util.TRCConfigParser;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
+
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.SpeedController;
 
 
 public class Robot extends TimedRobot
 {
     // Robot member definitions
-    Drive drive;
-    Intake intake;
-    Winch winch;
+    public static Drive drive;
+    public static Intake intake;
+    public static Shooter shooter;
+    public static Lift lift;
+    public static Conveyor conveyor;
+    public static TRCGyroBase gyro;
+    public static TRCEncoderSet leftEncoder, rightEncoder;
+    public static DigitalInput dio0, dio1;
 
     /**
      * Code here will run once as soon as the robot starts
@@ -24,44 +44,54 @@ public class Robot extends TimedRobot
     @Override
     public void robotInit() {
         // Setup: Communications
-        TRCNetworkData.initializeNetworkData(DataInterfaceType.Board);
+        TRCNetworkData.initialize(DataInterfaceType.Board);
+        TRCNetworkData.createDataPoint("Left Encoder");
+        TRCNetworkData.createDataPoint("Right Encoder");
+        TRCNetworkData.createDataPoint("Gyro");
+        TRCNetworkData.createDataPoint("dio0");
+        TRCNetworkData.createDataPoint("dio1");
         
         // Setup: Systems: Drivetrain
-        drive = new Drive(Constants.DRIVE_WHEEL_PORTS, Constants.DRIVE_WHEEL_TYPES, Constants.DRIVE_WHEEL_INVERTS,
-                true);
-        TRCDriveSync.initializeTRCDriveSync();
+        //drive = new Drive(Constants.DRIVE_WHEEL_PORTS, Constants.DRIVE_WHEEL_TYPES, Constants.DRIVE_WHEEL_INVERTS, true);
+        TRCDriveSync.initialize();
         TRCDriveSync.requestChangeState(DriveSyncState.Teleop);
-        ArcadeControlTest.initializeArcadeControlTest(drive);
 
-        // Setup: Systems: Mechanisms
-        TRCPneumaticSystem.setupPneumatics(Constants.PNEUMATICS_PCM_ID);
+        // Setup: Sensors
+        gyro = new TRCGyroBase(Constants.GYRO_TYPE);
+        dio0 = new DigitalInput(0);
+        dio1 = new DigitalInput(1);
+        /*SpeedController[] leftMotors = new SpeedController[2]; leftMotors[0] = drive.outputMotors[0]; leftMotors[1] = drive.outputMotors[1];
+        SpeedController[] rightMotors = new SpeedController[2]; rightMotors[0] = drive.outputMotors[2]; rightMotors[1] = drive.outputMotors[3];
+        for (SpeedController sm : drive.outputMotors)
+        {
+            ((CANSparkMax) sm).setIdleMode(IdleMode.kCoast);
+        }
+        leftEncoder = new TRCEncoderSet(Constants.ENCODER_LEFT_PORTS, Constants.ENCODER_LEFT_DISTANCE_MULTIPLIERS, false, 2, Constants.ENCODER_LEFT_TYPES, leftMotors);
+        rightEncoder = new TRCEncoderSet(Constants.ENCODER_RIGHT_PORTS, Constants.ENCODER_RIGHT_DISTANCE_MULTIPLIERS, false, 2, Constants.ENCODER_RIGHT_TYPES, rightMotors);
+        *///leftEncoder.setInverted(true);
+        //rightEncoder.setInverted(true);
+        shooter = new Shooter(Constants.SHOOTER_MOTOR_PORTS, Constants.SHOOTER_MOTOR_TYPES);
+        conveyor = new Conveyor(Constants.CONVEYOR_MOTOR_PORTS, Constants.CONVEYOR_MOTOR_TYPES);
+        //lift = new Lift(Constants.LIFT_MOTOR_PORTS, Constants.LIFT_MOTOR_TYPES);
         intake = new Intake(Constants.INTAKE_MOTOR_PORTS, Constants.INTAKE_MOTOR_TYPES, Constants.INTAKE_PNEUMATICS_PORTS);
-        winch = new Winch(Constants.WINCH_MOTOR_PORTS, Constants.WINCH_MOTOR_TYPES, Constants.WINCH_SERVO_PORT_A);
+        // Setup: Systems: Mechanisms
+        //TRCPneumaticSystem.setupPneumatics(Constants.PNEUMATICS_PCM_ID);
+        //intake = new Intake(Constants.INTAKE_MOTOR_PORTS, Constants.INTAKE_MOTOR_TYPES, Constants.INTAKE_PNEUMATICS_PORTS);
+        //lift = new Lift(Constants.WINCH_MOTOR_PORTS, Constants.WINCH_MOTOR_TYPES, Constants.WINCH_SERVO_PORT_A);
+        //shooter = new Shooter(Constants.SHOOTER_MOTOR_PORTS, Constants.SHOOTER_MOTOR_TYPES);
 
         // Setup: Input
-        TRCDriveInput.initializeDriveInput(Constants.INPUT_PORTS, Constants.INPUT_TYPES, Constants.SPEED_BASE, Constants.SPEED_BOOST);
+        TRCRobotManager.initialize();
+        TRCInputManager.initialize();
+        TRCAutoManager.initialize();
+        TRCRobotManager.registerObject("auto", AutoManager.class);
+        TRCRobotManager.registerObject("shooter", shooter);
+        TRCRobotManager.registerObject("conveyor", conveyor);
+        //TRCRobotManager.registerObject("lift", lift);
+        TRCRobotManager.registerObject("intake", intake);
+        TRCConfigParser.initialize();
 
-        /*
-        TRCDriveInput.bindButtonPress(Constants.INPUT_DRIVER_PORT, Constants.INPUT_DRIVE_TURN_LEFT_SLOW, ArcadeControlTest::INPUT_DRIVE_TURN_LEFT_SLOW);
-        TRCDriveInput.bindButtonPress(Constants.INPUT_DRIVER_PORT, Constants.INPUT_DRIVE_TURN_LEFT_FAST, ArcadeControlTest::INPUT_DRIVE_TURN_LEFT_FAST);
-        TRCDriveInput.bindButtonPress(Constants.INPUT_DRIVER_PORT, Constants.INPUT_DRIVE_TURN_RIGHT_SLOW, ArcadeControlTest::INPUT_DRIVE_TURN_RIGHT_SLOW);
-        TRCDriveInput.bindButtonPress(Constants.INPUT_DRIVER_PORT, Constants.INPUT_DRIVE_TURN_RIGHT_FAST, ArcadeControlTest::INPUT_DRIVE_TURN_RIGHT_FAST);
-
-        TRCDriveInput.bindButtonPress(Constants.INPUT_DRIVER_PORT, Constants.INPUT_DRIVE_FORWARD_SLOW, ArcadeControlTest::INPUT_DRIVE_FORWARD_SLOW);
-        TRCDriveInput.bindButtonPress(Constants.INPUT_DRIVER_PORT, Constants.INPUT_DRIVE_FORWARD_FAST, ArcadeControlTest::INPUT_DRIVE_FORWARD_FAST);
-        TRCDriveInput.bindButtonPress(Constants.INPUT_DRIVER_PORT, Constants.INPUT_DRIVE_BACKWARD_SLOW, ArcadeControlTest::INPUT_DRIVE_BACKWARD_SLOW);
-        TRCDriveInput.bindButtonPress(Constants.INPUT_DRIVER_PORT, Constants.INPUT_DRIVE_BACKWARD_FAST, ArcadeControlTest::INPUT_DRIVE_BACKWARD_FAST);
-
-        TRCDriveInput.bindButtonAbsence(Constants.INPUT_DRIVER_PORT, Constants.INPUT_DRIVE_BUTTONS_MANUAL, ArcadeControlTest::STOP);
-        */
-
-        TRCDriveInput.bindButtonPress(Constants.INPUT_GUNNER_PORT, Constants.INPUT_INTAKE_DROP, intake::dropIntake);
-        TRCDriveInput.bindButtonPress(Constants.INPUT_GUNNER_PORT, Constants.INPUT_INTAKE_RAISE, intake::raiseIntake);
-        TRCDriveInput.bindButtonPress(Constants.INPUT_GUNNER_PORT, Constants.INPUT_INTAKE_PULLIN, intake::pullIn);
-        TRCDriveInput.bindButtonPress(Constants.INPUT_GUNNER_PORT, Constants.INPUT_INTAKE_PUSHOUT, intake::pushOut);
-
-        TRCDriveInput.bindButtonPress(Constants.INPUT_GUNNER_PORT, Constants.INPUT_WINCH_BRAKE, winch::brake);
-        TRCDriveInput.bindButtonPress(Constants.INPUT_GUNNER_PORT, Constants.INPUT_WINCH_RELEASE, winch::release);
+        //AutoManager.initialize();
     }
 
     @Override
@@ -76,7 +106,13 @@ public class Robot extends TimedRobot
     @Override
     public void autonomousInit()
     {
-
+        Pose2d zero = new Pose2d(0, 0, Rotation2d.fromDegrees(0));
+        Pose2d target = new Pose2d(0.5, 0.5, Rotation2d.fromDegrees(135));
+        AutoManager.resetOdometry(zero);
+        AutoManager.enableCoprocessorExecution();
+        TRCAutoPath testPath = TRCAutoManager.getPath("TestPath");
+        testPath.setStartPose(AutoManager.getPose());
+        AutoManager.followRamsetePath(testPath);
     }
 
     /**
@@ -110,21 +146,26 @@ public class Robot extends TimedRobot
     public void driveRobot()
     {
         // And drive the robot
-        //double leftSpeed = TRCDriveInput.getController(Constants.INPUT_DRIVER_PORT).getAxis(XboxAxisType.LeftY);
-        //double rightSpeed = TRCDriveInput.getController(Constants.INPUT_DRIVER_PORT).getAxis(XboxAxisType.RightY);
+        TRCDriveParams dps = TRCInputManager.getDPS("drive");
         try
         {
             TRCDriveSync.assertTeleop();
             if (TRCDriveSync.getState() == DriveSyncState.Teleop)
             {
-                //drive.tankDrive(leftSpeed, rightSpeed, true);
-                TRCDriveInput.checkButtonBindings();
+                //drive.arcadeDrive(dps);
+                TRCInputManager.checkInputs();
             }
         }
-        catch (AssertionError e)
-        {
-            // System.out.println(e);
-        }
+        catch (AssertionError e) { }
+
+        //shooter.spinUp();
+        //conveyor.drive();
+
+//        TRCNetworkData.updateDataPoint("Left Encoder", leftEncoder.getDistance());
+//        TRCNetworkData.updateDataPoint("Right Encoder", rightEncoder.getDistance());
+        TRCNetworkData.updateDataPoint("Gyro", gyro.getAngle());
+        TRCNetworkData.updateDataPoint("dio0", dio0.get());
+        TRCNetworkData.updateDataPoint("dio1", dio1.get());
     }
 
     public static void main(String... args) throws InterruptedException
