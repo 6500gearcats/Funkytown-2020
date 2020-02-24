@@ -73,17 +73,44 @@ public class Shooter extends TRCDirectionalSystem
         //m_rotator_talon.set(ControlMode.Position, (getAngle() - Constants.SHOOTER_ANGLE_INTERVAL) * Constants.SHOOTER_ANGLE_MULTIPLIER);
     }
 
+    public void push()
+    {
+        m_pusher_talon.set(0.3);
+    }
+
+    public void stopPush()
+    {
+        m_pusher_talon.set(0.0);
+    }
+
     @Override
     public void driveForward()
     {
         //m_sparks[0].set(TRCInputManager.getAxisInput("shooter"));
         //m_sparks[1].set(-TRCInputManager.getAxisInput("shooter"));
         //m_pusher_talon.set(-1.0*TRCInputManager.getAxisInput("shooter2"));
+        m_sparks[0].set(0.2);
+        m_sparks[1].set(-0.2);
+        m_pusher_talon.set(0.3);
+        Robot.conveyor.setShooting(true);
+        //m_PIDs[0].setReference(Constants.SHOOTER_RPM_TARGET, ControlType.kVelocity);
+        //m_PIDs[1].setReference(Constants.SHOOTER_RPM_TARGET, ControlType.kVelocity);
+    }
+
+    public void driveFast()
+    {
         m_sparks[0].set(0.9);
         m_sparks[1].set(-0.9);
         m_pusher_talon.set(0.8);
-        //m_PIDs[0].setReference(Constants.SHOOTER_RPM_TARGET, ControlType.kVelocity);
-        //m_PIDs[1].setReference(Constants.SHOOTER_RPM_TARGET, ControlType.kVelocity);
+        Robot.conveyor.setShooting(true);
+    }
+
+    public void driveSlow()
+    {
+        m_sparks[0].set(0.2);
+        m_sparks[1].set(-0.2);
+        m_pusher_talon.set(0.3);
+        Robot.conveyor.setShooting(true);
     }
 
     @Override
@@ -92,6 +119,7 @@ public class Shooter extends TRCDirectionalSystem
         m_sparks[0].set(0.0);
         m_sparks[1].set(0.0);
         m_pusher_talon.set(0.0);
+        Robot.conveyor.setShooting(false);
         //m_PIDs[0].setReference(Constants.SHOOTER_RPM_IDLE, ControlType.kVelocity);
         //m_PIDs[1].setReference(Constants.SHOOTER_RPM_IDLE, ControlType.kVelocity);
     }

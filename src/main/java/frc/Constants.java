@@ -84,9 +84,10 @@ public class Constants
     public final static int LIFT_MOTOR_PORTS[] = {LIFT_MOTOR_A, LIFT_MOTOR_B};
     public final static SpeedControllerType LIFT_MOTOR_TYPES[] = {SpeedControllerType.CANSparkMax, SpeedControllerType.CANSparkMax};
     public final static double LIFT_ANGLE_TOLERANCE = 5.0;
-    public final static double LIFT_SPEED_UP = 1.0;
-    public final static double LIFT_SPEED_DOWN = 0.2;
+    public final static double LIFT_SPEED_UP = 0.5;
+    public final static double LIFT_SPEED_DOWN = -0.5;
     public final static double LIFT_SPEED_BALANCE = 0.2;
+    public final static double LIFT_MAX_HEIGHT = 4800.0;
     //public final static int WINCH_SERVO_PORT_A = 0;
     //public final static int WINCH_SERVO_ANGLE_BRAKE = 0;
     //public final static int WINCH_SERVO_ANGLE_RELEASE = 0;
@@ -113,7 +114,11 @@ public class Constants
     //public final static double CONVEYOR_RPM_TARGET = 30.0;
     //public final static double CONVEYOR_RPM_IDLE = 0.0;
     //public final static double CONVEYOR_RPM_MULTIPLIER = 1.0;
-    public final static double CONVEYOR_SPEED = 0.6;
+    public final static double CONVEYOR_UPPER_SPEED = 0.45;
+    public final static double CONVEYOR_LOWER_SPEED = 0.55;
+    public final static int CONVEYOR_DIO_ENTERED = 0;
+    public final static int CONVEYOR_DIO_STORED = 1;
+    public final static int CONVEYOR_DIO_FULL = 2;
     public final static int CONVEYOR_PORT_LOWER = 8;
     public final static int CONVEYOR_PORT_UPPER = 6;
     public final static int CONVEYOR_MOTOR_PORTS[] = {CONVEYOR_PORT_LOWER, CONVEYOR_PORT_UPPER};
