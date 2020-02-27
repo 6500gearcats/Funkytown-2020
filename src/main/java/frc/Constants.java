@@ -51,14 +51,14 @@ public class Constants
 	public static final double SPEED_BOOST             = 0.95;
 
 	// Drive Constants
-	public final static int DRIVE_MOTOR_FRONTLEFT               = 2;
-	public final static int DRIVE_MOTOR_FRONTRIGHT              = 3;
-	public final static int DRIVE_MOTOR_REARLEFT                = 1;
-	public final static int DRIVE_MOTOR_REARRIGHT               = 4;
-	public final static boolean DRIVE_MOTOR_FRONTLEFT_INVERTED	= true;
-	public final static boolean DRIVE_MOTOR_REARLEFT_INVERTED	= true;
-	public final static boolean DRIVE_MOTOR_FRONTRIGHT_INVERTED	= true;
-	public final static boolean DRIVE_MOTOR_REARRIGHT_INVERTED	= true;
+	public final static int DRIVE_MOTOR_FRONTLEFT               = 3;
+	public final static int DRIVE_MOTOR_FRONTRIGHT              = 2;
+	public final static int DRIVE_MOTOR_REARLEFT                = 4;
+	public final static int DRIVE_MOTOR_REARRIGHT               = 1;
+	public final static boolean DRIVE_MOTOR_FRONTLEFT_INVERTED	= false;
+	public final static boolean DRIVE_MOTOR_REARLEFT_INVERTED	= false;
+	public final static boolean DRIVE_MOTOR_FRONTRIGHT_INVERTED	= false;
+	public final static boolean DRIVE_MOTOR_REARRIGHT_INVERTED	= false;
 
 	// Mechanism Constants
 	public final static int INTAKE_MOTOR_A = 0;

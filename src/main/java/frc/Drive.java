@@ -9,8 +9,8 @@ import edu.wpi.first.networktables.*;
 
 public class Drive extends TRCDifferentialDrive implements TableEntryListener
 {
-	private double rtExternalControl = 0.0;
-	private double fbExternalControl = 0.0;
+	private double lExtControl = 0.0;
+	private double rExtControl = 0.0;
 
 	/**
 	 *	Construct a Drive with motors and sensors
@@ -57,23 +57,31 @@ public class Drive extends TRCDifferentialDrive implements TableEntryListener
 	 */
 	public void externalDrive()
 	{
-		pidDrive(fbExternalControl, rtExternalControl);
-		feed();
+		tankDrive(lExtControl, rExtControl);
+	}
+
+	/**
+	 *	Reset external data points
+	 */
+	public void resetExternalPoints()
+	{
+		lExtControl = 0.0;
+		rExtControl = 0.0;
 	}
 
 	public void valueChanged(NetworkTable table, String key, NetworkTableEntry entry, NetworkTableValue value, int flags)
 	{
 		double rawValue = value.getDouble();
 
-		if (key.equals(Constants.TABLE_KEY_ROTATE))
+		if (key.equals(Constants.TABLE_KEY_LEFTPOWER))
 		{
-			rtExternalControl = rawValue;
-			// System.out.println("Rotate for: " + rawValue);
+			lExtControl = rawValue;
+			// System.out.println("Left: " + rawValue);
 		}
-		else if (key.equals(Constants.TABLE_KEY_FORWARDBACK))
+		else if (key.equals(Constants.TABLE_KEY_RIGHTPOWER))
 		{
-			fbExternalControl = rawValue;
-			// System.out.println("Drive for: " + rawValue);
+			rExtControl = rawValue;
+			// System.out.println("Right: " + rawValue);
 		}
 	}
 }

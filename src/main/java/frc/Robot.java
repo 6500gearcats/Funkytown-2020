@@ -99,8 +99,8 @@ public class Robot extends TimedRobot
 		System.out.println("Created drivetrain object");
 
 		table = NetworkTableInstance.getDefault().getTable("/SmartDashboard");
-		table.addEntryListener(Constants.TABLE_KEY_FORWARDBACK, this.drive, EntryListenerFlags.kUpdate);
-		table.addEntryListener(Constants.TABLE_KEY_ROTATE, this.drive, EntryListenerFlags.kUpdate);
+		table.addEntryListener(Constants.TABLE_KEY_LEFTPOWER, this.drive, EntryListenerFlags.kUpdate);
+		table.addEntryListener(Constants.TABLE_KEY_RIGHTPOWER, this.drive, EntryListenerFlags.kUpdate);
 		System.out.println("Created NetworkTable");
 
 		TRCDriveInput.initializeDriveInput(Constants.INPUT_PORTS, Constants.INPUT_TYPES, Constants.SPEED_BASE, Constants.SPEED_BOOST);
@@ -176,7 +176,8 @@ public class Robot extends TimedRobot
 		// fr.stopMotor();
 		// rl.stopMotor();
 		// rr.stopMotor();
-		// drive.pidDrive(6.0, 0.0);
+		// drive.pidDrive(0.0, 180.0);
+		drive.resetExternalPoints();
 	}
 
 	/**
@@ -233,8 +234,8 @@ public class Robot extends TimedRobot
 	public void driveRobot()
 	{
 		// And drive the robot
-		double leftSpeed = TRCDriveInput.getController(Constants.INPUT_DRIVER_PORT).getAxis(XboxAxisType.LeftY);
-		double rightSpeed = TRCDriveInput.getController(Constants.INPUT_DRIVER_PORT).getAxis(XboxAxisType.RightY);
+		double leftSpeed = TRCDriveInput.getController(Constants.INPUT_DRIVER_PORT).getAxis(XboxAxisType.RightY);
+		double rightSpeed = TRCDriveInput.getController(Constants.INPUT_DRIVER_PORT).getAxis(XboxAxisType.LeftY);
 		drive.tankDrive(leftSpeed, rightSpeed, true);
 	}
 
