@@ -186,16 +186,17 @@ public class Robot extends TimedRobot
 	@Override
 	public void autonomousPeriodic()
 	{
-		flEncoder.setPosition(0.0);
-		rlEncoder.setPosition(0.0);
-		frEncoder.setPosition(0.0);
-		rrEncoder.setPosition(0.0);
+		// flEncoder.setPosition(0.0);
+		// rlEncoder.setPosition(0.0);
+		// frEncoder.setPosition(0.0);
+		// rrEncoder.setPosition(0.0);
 		// gyroscope.reset();
 		// driveRobot();
 		// System.out.println(leftEncoders.getDistance());
 		// drive.tankDrive(0.0, 0.0, false);
 		// drive.pidDrive(fbExternalControl, rtExternalControl);
 		drive.externalDrive();
+		// drive.resetExternalPoints();
 		// uncomment the following to enable autodrive
 	}
 
@@ -234,8 +235,8 @@ public class Robot extends TimedRobot
 	public void driveRobot()
 	{
 		// And drive the robot
-		double leftSpeed = TRCDriveInput.getController(Constants.INPUT_DRIVER_PORT).getAxis(XboxAxisType.RightY);
-		double rightSpeed = TRCDriveInput.getController(Constants.INPUT_DRIVER_PORT).getAxis(XboxAxisType.LeftY);
+		double leftSpeed = TRCDriveInput.getController(Constants.INPUT_DRIVER_PORT).getAxis(XboxAxisType.LeftY);
+		double rightSpeed = TRCDriveInput.getController(Constants.INPUT_DRIVER_PORT).getAxis(XboxAxisType.RightY);
 		drive.tankDrive(leftSpeed, rightSpeed, true);
 	}
 

@@ -57,7 +57,7 @@ public class Drive extends TRCDifferentialDrive implements TableEntryListener
 	 */
 	public void externalDrive()
 	{
-		tankDrive(lExtControl, rExtControl);
+		tankDrive(lExtControl, rExtControl, false);
 	}
 
 	/**
