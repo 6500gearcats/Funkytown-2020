@@ -33,6 +33,8 @@ public class Robot extends TimedRobot
 	private TRCController controller;
 	private Drive drive;
 
+	private CANSparkMax ejector;
+
 	private NetworkTable table;
 
 	private double fbExternalControl = 0.0;
@@ -105,6 +107,8 @@ public class Robot extends TimedRobot
 
 		TRCDriveInput.initializeDriveInput(Constants.INPUT_PORTS, Constants.INPUT_TYPES, Constants.SPEED_BASE, Constants.SPEED_BOOST);
 		System.out.println("Initialized drive input");
+
+		ejector = new CANSparkMax(22, CANSparkMax.MotorType.kBrushless);
 	}
 
 	@Override
@@ -195,9 +199,10 @@ public class Robot extends TimedRobot
 		// System.out.println(leftEncoders.getDistance());
 		// drive.tankDrive(0.0, 0.0, false);
 		// drive.pidDrive(fbExternalControl, rtExternalControl);
-		drive.externalDrive();
+		// drive.externalDrive();
 		// drive.resetExternalPoints();
 		// uncomment the following to enable autodrive
+		ejector.set(0.2);
 	}
 
 	/**
