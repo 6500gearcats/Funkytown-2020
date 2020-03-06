@@ -2,7 +2,7 @@ package frc;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.List;
+import java.util.List; 
 
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
@@ -29,8 +29,10 @@ import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
+import edu.wpi.first.wpilibj.Timer;
 import frc.team6500.trc.auto.TRCAutoPath;
 import frc.team6500.trc.auto.TRCDriveSync;
+import frc.team6500.trc.util.TRCNetworkData;
 import frc.team6500.trc.util.TRCTypes.DriveSyncState;
 import frc.team6500.trc.wrappers.sensors.TRCEncoder;
 import frc.team6500.trc.wrappers.sensors.TRCEncoderSet;
@@ -54,6 +56,7 @@ public class AutoManager
     private static NetworkTableInstance tableServer;
     private static NetworkTable table;
     public static AtomicBoolean coprocessorExecutionActive;
+    private static boolean autoing;
 
     public static void initialize()
     {
@@ -85,6 +88,13 @@ public class AutoManager
 		
         table = tableServer.getTable("/coprocessor");
         coprocessorExecutionActive = new AtomicBoolean(false);
+
+        autoing = false;
+    }
+
+    public static boolean getAutoing()
+    {
+        return autoing;
     }
 
     public static void enableCoprocessorExecution()
@@ -199,7 +209,7 @@ public class AutoManager
 
         enablePID();
 
-        while (timeSeconds <= mainTrajectory.getTotalTimeSeconds() && coprocessorExecutionActive.get())
+        while (timeSeconds <= mainTrajectory.getTotalTimeSeconds())// && coprocessorExecutionActive.get())
         {
             try
             {
@@ -219,6 +229,8 @@ public class AutoManager
             update();
             ChassisSpeeds adjustedSpeeds = controller.calculate(getPose(), goalPose);
             DifferentialDriveWheelSpeeds wheelSpeeds = driveKinematics.toWheelSpeeds(adjustedSpeeds);
+            TRCNetworkData.updateDataPoint("Left Target Velocity", wheelSpeeds.leftMetersPerSecond);
+            TRCNetworkData.updateDataPoint("Right Target Velocity", wheelSpeeds.rightMetersPerSecond);
             setLeftPIDVelocity(wheelSpeeds.leftMetersPerSecond);
             setRightPIDVelocity(wheelSpeeds.rightMetersPerSecond);
 
@@ -334,5 +346,72 @@ public class AutoManager
                 break;
             }
         }
+    }
+
+    public static void go()
+    {
+        Robot.intake.toggle();
+        Instant start = Instant.now();
+        while (Duration.between(start, Instant.now()).toSeconds() < 2.0)
+        {
+            Robot.drive.tankDrive(0.3, 0.3, false);
+        }
+        Robot.drive.tankDrive(0.0, 0.0, false);
+        start = Instant.now();
+        while (Duration.between(start, Instant.now()).toSeconds() < 0.8)
+        {
+            Robot.drive.tankDrive(-0.3, -0.3, false);
+        }
+        start = Instant.now();
+        while (Duration.between(start, Instant.now()).toMillis() < 350.0)
+        {
+            Robot.lift.driveForward();
+        }
+        Robot.lift.fullStop();
+        Timer.delay(5.0);
+        while (Math.abs(Robot.shooter.getRPM() - Constants.SHOOTER_RPM_TARGET) > Constants.SHOOTER_TOLERANCE_RPM)
+        {
+            Robot.shooter.driveForward();
+        }
+        Timer.delay(0.5);
+        start = Instant.now();
+        while (Duration.between(start, Instant.now()).toSeconds() < 4.0)
+        {
+            Robot.conveyor.driveForward();
+        }
+        Robot.conveyor.fullStop();
+        Robot.shooter.fullStop();
+        //while (Robot.shooter.getRPM() < Constants.SHOOTER_RPM_TARGET)
+        //{
+        //    Robot.shooter.driveForward();
+        //}
+        //Instant now = Instant.now();
+        //while (Duration.between(now, Instant.now()).toMillis() < Constants.AUTO_CONVEYOR_TIME)
+        //{
+
+        //}
+        //Robot.shooter.fullStop();
+    }
+
+    public static void goBack()
+    {
+        if (autoing) {return;}
+        autoing = true;
+        m_leftEncoder.reset();
+        m_rightEncoder.reset();
+        while ((Math.abs(m_leftEncoder.getDistance()) + Math.abs(m_rightEncoder.getDistance())) / 2 < Constants.AUTO_BACKUP_DISTANCE)
+        {
+            Robot.drive.brake();
+            Robot.drive.tankDrive(0.3, 0.3, false);
+        }
+        Robot.drive.brake();
+        Robot.drive.tankDrive(0.0, 0.0, false);
+        Robot.drive.coast();
+        autoing = false;
+    }
+
+    public static void playSound()
+    {
+        TRCNetworkData.updateDataPoint("SOUND", "YES");
     }
 }

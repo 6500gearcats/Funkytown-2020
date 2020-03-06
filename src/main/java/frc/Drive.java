@@ -3,8 +3,16 @@ package frc;
 
 import frc.team6500.trc.wrappers.systems.drives.TRCDifferentialDrive;
 import frc.team6500.trc.util.TRCTypes.*;
+
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
+
 import frc.team6500.trc.util.TRCDriveParams;
+import frc.team6500.trc.util.TRCInputManager;
+import frc.team6500.trc.util.TRCNetworkData;
 import frc.team6500.trc.util.TRCSpeed;
+
+import edu.wpi.first.wpilibj.SpeedController;
 
 
 public class Drive extends TRCDifferentialDrive
@@ -21,6 +29,7 @@ public class Drive extends TRCDifferentialDrive
         this.zS = new TRCSpeed();
 
         this.slow = false;
+        this.coast();
     }
 
 
@@ -52,7 +61,7 @@ public class Drive extends TRCDifferentialDrive
     {
         dps.setRawX(this.xS.calculateSpeed(-scaleInput(dps.getRawX())));
         dps.setRawY(this.yS.calculateSpeed(-scaleInput(dps.getRawY())));
-        dps.setRawZ(this.zS.calculateSpeed(scaleInput(dps.getRawZ())));
+        dps.setRawZ(this.zS.calculateSpeed(-scaleInput(dps.getRawZ())));
 
         if (this.slow)
         {
@@ -70,6 +79,7 @@ public class Drive extends TRCDifferentialDrive
     @Override
     public void tankDrive(TRCDriveParams dps)
     {
+        this.drive.feed();
         super.tankDrive(filter(dps));
     }
 
@@ -81,5 +91,36 @@ public class Drive extends TRCDifferentialDrive
     public void setRightVolts(double volts)
     {
         this.rightMotor.setVoltage(volts);
+    }
+
+    public void brake()
+    {
+        for (SpeedController sm : this.outputMotors)
+        {
+            ((CANSparkMax) sm).setIdleMode(IdleMode.kBrake);
+        }
+    }
+
+    public void coast()
+    {
+        for (SpeedController sm : this.outputMotors)
+        {
+            ((CANSparkMax) sm).setIdleMode(IdleMode.kCoast);
+        }
+    }
+
+    public void autoDrive()
+    {
+        drive.tankDrive(TRCNetworkData.getDataPoint("AIcmdL"), TRCNetworkData.getDataPoint("AIcmdR"), false);
+    }
+
+    public void manualDrive()
+    {
+        if (!AutoManager.getAutoing())
+        {
+            TRCDriveParams dps = TRCInputManager.getDPS("drive");
+            dps = filter(dps);
+            arcadeDrive(dps);
+        }
     }
 }

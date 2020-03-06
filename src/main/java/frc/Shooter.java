@@ -2,6 +2,7 @@ package frc;
 
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.revrobotics.CANEncoder;
@@ -11,6 +12,7 @@ import com.revrobotics.ControlType;
 
 import frc.team6500.trc.systems.TRCDirectionalSystem;
 import frc.team6500.trc.util.TRCInputManager;
+import frc.team6500.trc.util.TRCNetworkData;
 import frc.team6500.trc.util.TRCTypes.*;
 
 
@@ -19,108 +21,69 @@ public class Shooter extends TRCDirectionalSystem
     private static CANSparkMax[] m_sparks;
     private static CANPIDController[] m_PIDs;
     private static CANEncoder[] m_encoders;
-    private static WPI_TalonSRX[] m_talons;
-    private static WPI_TalonSRX m_pusher_talon;
-    private static WPI_TalonSRX m_rotator_talon;
 
     // Two spark maxes for the flywheels, one talon srx for the pusher-upper wheel, one talon for rotating the mechanism
     public Shooter(int[] motorPorts, SpeedControllerType[] motorTypes)
     {
         super(motorPorts, motorTypes, false, 1.0, -1.0);
-        m_sparks = new CANSparkMax[2];
-        m_PIDs = new CANPIDController[2];
-        m_encoders = new CANEncoder[2];
-        m_talons = new WPI_TalonSRX[2];
-        for (int i = 0; i < 2; i++)
+        m_sparks = new CANSparkMax[3];
+        m_PIDs = new CANPIDController[3];
+        m_encoders = new CANEncoder[3];
+
+        for (int i = 0; i < 3; i++)
         {
             m_sparks[i] = (CANSparkMax) this.outputMotors.get(motorPorts[i]);
             m_PIDs[i] = new CANPIDController(m_sparks[i]);
             m_encoders[i] = new CANEncoder(m_sparks[i]);
         }
-        for (int i = 2; i < 4; i++)
-        {
-            m_talons[i-2] = (WPI_TalonSRX) this.outputMotors.get(motorPorts[i]);
-        }
-        m_pusher_talon = m_talons[0];
-        m_rotator_talon = m_talons[1];
-        m_pusher_talon.set(ControlMode.Velocity, 0.0);
-        m_rotator_talon.set(ControlMode.Position, 0.0);
+
+        m_PIDs[0].setFF(0.000175);
+        m_PIDs[0].setP(0.00005);
+        m_PIDs[1].setFF(0.000175);
+        m_PIDs[1].setP(0.00005);
+        m_PIDs[1].setFF(0.000100);
+        m_PIDs[1].setP(0.00004);
+
+        TRCNetworkData.updateDataPoint("FF 0", 170);
+        TRCNetworkData.updateDataPoint("FF 1", 180);
+        TRCNetworkData.updateDataPoint("FF 2", 100);
     }
 
-    public double getRPM()
+    public double getRPMForward()
     {
-        return (m_encoders[0].getVelocity() + m_encoders[1].getVelocity())/2;
+        return (m_encoders[0].getVelocity() + -m_encoders[1].getVelocity())/2;
     }
 
-    public double getAngle()
+    public double getRPMEjector()
     {
-        return m_rotator_talon.getSelectedSensorPosition() / Constants.SHOOTER_ANGLE_MULTIPLIER;
-    }
-
-    public void rotateUp()
-    {
-        m_rotator_talon.set(ControlMode.PercentOutput, 1.0);
-        //m_rotator_talon.set(ControlMode.Position, (getAngle() + Constants.SHOOTER_ANGLE_INTERVAL) * Constants.SHOOTER_ANGLE_MULTIPLIER);
-    }
-
-    public void rotateStop()
-    {
-        m_rotator_talon.set(ControlMode.PercentOutput, 0.0);
-    }
-
-    public void rotateDown()
-    {
-        //m_rotator_talon.set(ControlMode.Position, (getAngle() - Constants.SHOOTER_ANGLE_INTERVAL) * Constants.SHOOTER_ANGLE_MULTIPLIER);
-    }
-
-    public void push()
-    {
-        m_pusher_talon.set(0.3);
-    }
-
-    public void stopPush()
-    {
-        m_pusher_talon.set(0.0);
+        return m_encoders[2].getVelocity();
     }
 
     @Override
     public void driveForward()
     {
-        //m_sparks[0].set(TRCInputManager.getAxisInput("shooter"));
-        //m_sparks[1].set(-TRCInputManager.getAxisInput("shooter"));
-        //m_pusher_talon.set(-1.0*TRCInputManager.getAxisInput("shooter2"));
-        m_sparks[0].set(0.2);
-        m_sparks[1].set(-0.2);
-        m_pusher_talon.set(0.3);
         Robot.conveyor.setShooting(true);
-        //m_PIDs[0].setReference(Constants.SHOOTER_RPM_TARGET, ControlType.kVelocity);
-        //m_PIDs[1].setReference(Constants.SHOOTER_RPM_TARGET, ControlType.kVelocity);
-    }
-
-    public void driveFast()
-    {
-        m_sparks[0].set(0.9);
-        m_sparks[1].set(-0.9);
-        m_pusher_talon.set(0.8);
-        Robot.conveyor.setShooting(true);
-    }
-
-    public void driveSlow()
-    {
-        m_sparks[0].set(0.2);
-        m_sparks[1].set(-0.2);
-        m_pusher_talon.set(0.3);
-        Robot.conveyor.setShooting(true);
+        m_PIDs[0].setReference(Constants.SHOOTER_RPM_TARGET_AB, ControlType.kVelocity);
+        m_PIDs[1].setReference(-Constants.SHOOTER_RPM_TARGET_AB, ControlType.kVelocity);
+        m_PIDs[2].setReference(Constants.SHOOTER_RPM_TARGET_EJECTOR, ControlType.kVelocity);
     }
 
     @Override
     public void fullStop()
     {
-        m_sparks[0].set(0.0);
-        m_sparks[1].set(0.0);
-        m_pusher_talon.set(0.0);
         Robot.conveyor.setShooting(false);
-        //m_PIDs[0].setReference(Constants.SHOOTER_RPM_IDLE, ControlType.kVelocity);
-        //m_PIDs[1].setReference(Constants.SHOOTER_RPM_IDLE, ControlType.kVelocity);
+        m_PIDs[0].setReference(Constants.SHOOTER_RPM_IDLE, ControlType.kVelocity);
+        m_PIDs[1].setReference(-Constants.SHOOTER_RPM_IDLE, ControlType.kVelocity);
+        m_PIDs[2].setReference(Constants.SHOOTER_RPM_IDLE, ControlType.kVelocity);
+    }
+
+    public void updateDebugInfo()
+    {
+        TRCNetworkData.updateDataPoint("RPM 0", m_encoders[0].getVelocity());
+        TRCNetworkData.updateDataPoint("RPM 1", m_encoders[1].getVelocity());
+        TRCNetworkData.updateDataPoint("RPM 2", m_encoders[2].getVelocity());
+        m_PIDs[0].setFF(TRCNetworkData.getDataPoint("FF 0") / 1000000.0);
+        m_PIDs[1].setFF(TRCNetworkData.getDataPoint("FF 1") / 1000000.0);
+        m_PIDs[2].setFF(TRCNetworkData.getDataPoint("FF 2") / 1000000.0);
     }
 }

@@ -4,6 +4,7 @@ package frc;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 
 import frc.team6500.trc.systems.TRCDirectionalSystem;
@@ -26,17 +27,21 @@ public class Lift extends TRCDirectionalSystem
         for (int i = 0; i < 2; i++)
         {
             m_sparks[i] = (CANSparkMax) this.outputMotors.get(motorPorts[i]);
+            m_sparks[i].setSmartCurrentLimit(Constants.LIFT_CURRENT_LIMIT);
             m_PIDs[i] = new CANPIDController(m_sparks[i]);
             m_encoders[i] = new CANEncoder(m_sparks[i]);
         }
-        brake();
+        fullStop();
         TRCNetworkData.createDataPoint("Lift Encoder Distance");
     }
 
-    public void brake()
+    @Override
+    public void fullStop()
     {
         m_sparks[0].setIdleMode(IdleMode.kBrake);
+        m_sparks[0].set(-Constants.LIFT_IDLE_RESISTANCE);
         m_sparks[1].setIdleMode(IdleMode.kBrake);
+        m_sparks[1].set(Constants.LIFT_IDLE_RESISTANCE);
     }
 
     public void release()
@@ -59,6 +64,20 @@ public class Lift extends TRCDirectionalSystem
     public void driveReverse()
     {
         TRCNetworkData.updateDataPoint("Lift Encoder Distance", (m_encoders[0].getPosition() + m_encoders[1].getPosition()) / 2);
+        /*if (m_sparks[0].getOutputCurrent() - m_sparks[1].getOutputCurrent() > Constants.LIFT_AMP_TOLERANCE)
+        {
+            m_sparks[0].set(Constants.LIFT_SPEED_DOWN / 2);
+            m_sparks[1].set(Constants.LIFT_SPEED_DOWN);
+        }
+        else if (m_sparks[1].getOutputCurrent() - m_sparks[0].getOutputCurrent() > Constants.LIFT_AMP_TOLERANCE)
+        {
+            m_sparks[1].set(Constants.LIFT_SPEED_DOWN / 2);
+            m_sparks[0].set(Constants.LIFT_SPEED_DOWN);
+        }
+        else
+        {
+            super.driveReverse();
+        }*/
         super.driveReverse();
     }
 

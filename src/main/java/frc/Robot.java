@@ -47,40 +47,45 @@ public class Robot extends TimedRobot
         TRCNetworkData.initialize(DataInterfaceType.Board);
         TRCNetworkData.createDataPoint("Left Encoder");
         TRCNetworkData.createDataPoint("Right Encoder");
-        TRCNetworkData.createDataPoint("Gyro");
         TRCNetworkData.createDataPoint("Ball Entered");
         TRCNetworkData.createDataPoint("Ball Stored");
-        TRCNetworkData.createDataPoint("Roll");
-        TRCNetworkData.createDataPoint("Pitch");
+        TRCNetworkData.createDataPoint("Conveyor Full");
+        TRCNetworkData.createDataPoint("Gyro Yaw");
+        //TRCNetworkData.createDataPoint("Gyro Roll");
+        //TRCNetworkData.createDataPoint("Gyro Pitch");
+        TRCNetworkData.createDataPoint("Left Target Velocity");
+        TRCNetworkData.createDataPoint("Right Target Velocity");
+        TRCNetworkData.createDataPoint("RPM 0");
+        TRCNetworkData.createDataPoint("RPM 1");
+        TRCNetworkData.createDataPoint("FF 0");
+        TRCNetworkData.createDataPoint("FF 1");
+        TRCNetworkData.createDataPoint("Pusher FF");
+        TRCNetworkData.createDataPoint("Pusher RPM");
+        TRCNetworkData.createDataPoint("AIcmdL");
+        TRCNetworkData.createDataPoint("AIcmdR");
+        TRCNetworkData.createDataPoint("Ultrasonic");
+        TRCNetworkData.createDataPoint("SOUND");
         
         // Setup: Systems: Drivetrain
-        //drive = new Drive(Constants.DRIVE_WHEEL_PORTS, Constants.DRIVE_WHEEL_TYPES, Constants.DRIVE_WHEEL_INVERTS, true);
+        drive = new Drive(Constants.DRIVE_WHEEL_PORTS, Constants.DRIVE_WHEEL_TYPES, Constants.DRIVE_WHEEL_INVERTS, true);
         TRCDriveSync.initialize();
         TRCDriveSync.requestChangeState(DriveSyncState.Teleop);
 
         // Setup: Sensors
         gyro = new TRCGyroBase(Constants.GYRO_TYPE);
-        //dio0 = new DigitalInput(0);
-        //dio1 = new DigitalInput(1);
-        /*SpeedController[] leftMotors = new SpeedController[2]; leftMotors[0] = drive.outputMotors[0]; leftMotors[1] = drive.outputMotors[1];
+        
+        SpeedController[] leftMotors = new SpeedController[2]; leftMotors[0] = drive.outputMotors[0]; leftMotors[1] = drive.outputMotors[1];
         SpeedController[] rightMotors = new SpeedController[2]; rightMotors[0] = drive.outputMotors[2]; rightMotors[1] = drive.outputMotors[3];
-        for (SpeedController sm : drive.outputMotors)
-        {
-            ((CANSparkMax) sm).setIdleMode(IdleMode.kCoast);
-        }
         leftEncoder = new TRCEncoderSet(Constants.ENCODER_LEFT_PORTS, Constants.ENCODER_LEFT_DISTANCE_MULTIPLIERS, false, 2, Constants.ENCODER_LEFT_TYPES, leftMotors);
         rightEncoder = new TRCEncoderSet(Constants.ENCODER_RIGHT_PORTS, Constants.ENCODER_RIGHT_DISTANCE_MULTIPLIERS, false, 2, Constants.ENCODER_RIGHT_TYPES, rightMotors);
-        *///leftEncoder.setInverted(true);
-        //rightEncoder.setInverted(true);
+        
+        TRCPneumaticSystem.setupPneumatics(Constants.PNEUMATICS_PCM_ID);
         shooter = new Shooter(Constants.SHOOTER_MOTOR_PORTS, Constants.SHOOTER_MOTOR_TYPES);
         conveyor = new Conveyor(Constants.CONVEYOR_MOTOR_PORTS, Constants.CONVEYOR_MOTOR_TYPES);
         lift = new Lift(Constants.LIFT_MOTOR_PORTS, Constants.LIFT_MOTOR_TYPES);
         intake = new Intake(Constants.INTAKE_MOTOR_PORTS, Constants.INTAKE_MOTOR_TYPES, Constants.INTAKE_PNEUMATICS_PORTS);
         // Setup: Systems: Mechanisms
-        //TRCPneumaticSystem.setupPneumatics(Constants.PNEUMATICS_PCM_ID);
-        //intake = new Intake(Constants.INTAKE_MOTOR_PORTS, Constants.INTAKE_MOTOR_TYPES, Constants.INTAKE_PNEUMATICS_PORTS);
-        //lift = new Lift(Constants.WINCH_MOTOR_PORTS, Constants.WINCH_MOTOR_TYPES, Constants.WINCH_SERVO_PORT_A);
-        //shooter = new Shooter(Constants.SHOOTER_MOTOR_PORTS, Constants.SHOOTER_MOTOR_TYPES);
+        
 
         // Setup: Input
         TRCRobotManager.initialize();
@@ -91,9 +96,10 @@ public class Robot extends TimedRobot
         TRCRobotManager.registerObject("conveyor", conveyor);
         TRCRobotManager.registerObject("lift", lift);
         TRCRobotManager.registerObject("intake", intake);
+        TRCRobotManager.registerObject("drive", drive);
         TRCConfigParser.initialize();
 
-        //AutoManager.initialize();
+        AutoManager.initialize();
     }
 
     @Override
@@ -108,13 +114,14 @@ public class Robot extends TimedRobot
     @Override
     public void autonomousInit()
     {
-        Pose2d zero = new Pose2d(0, 0, Rotation2d.fromDegrees(0));
-        Pose2d target = new Pose2d(0.5, 0.5, Rotation2d.fromDegrees(135));
-        AutoManager.resetOdometry(zero);
-        AutoManager.enableCoprocessorExecution();
-        TRCAutoPath testPath = TRCAutoManager.getPath("TestPath");
-        testPath.setStartPose(AutoManager.getPose());
-        AutoManager.followRamsetePath(testPath);
+        AutoManager.go();
+        //Pose2d zero = new Pose2d(0, 0, Rotation2d.fromDegrees(0));
+        //Pose2d target = new Pose2d(0.5, 0.5, Rotation2d.fromDegrees(135));
+        //AutoManager.resetOdometry(zero);
+        //AutoManager.enableCoprocessorExecution();
+        //TRCAutoPath testPath = TRCAutoManager.getPath("testpath");
+        //testPath.setStartPose(AutoManager.getPose());
+        //AutoManager.followRamsetePath(testPath);
     }
 
     /**
@@ -123,7 +130,7 @@ public class Robot extends TimedRobot
     @Override
     public void autonomousPeriodic()
     {
-        driveRobot();
+        //drive.autoDrive();
     }
 
     /**
@@ -132,7 +139,6 @@ public class Robot extends TimedRobot
     @Override
     public void teleopInit()
     {
-    
         // Nothing to do here ¯\_(ツ)_/¯
     }
 
@@ -147,29 +153,20 @@ public class Robot extends TimedRobot
 
     public void driveRobot()
     {
-        // And drive the robot
-        TRCDriveParams dps = TRCInputManager.getDPS("drive");
-        try
-        {
-            TRCDriveSync.assertTeleop();
-            if (TRCDriveSync.getState() == DriveSyncState.Teleop)
-            {
-                //drive.arcadeDrive(dps);
+        //try
+        //{
+        //    TRCDriveSync.assertTeleop();
+        //    if (TRCDriveSync.getState() == DriveSyncState.Teleop)
+        //    {
                 TRCInputManager.checkInputs();
-            }
-        }
-        catch (AssertionError e) { }
+                shooter.updateDebugInfo();
+        //    }
+        //}
+        //catch (AssertionError e) { }
 
-        //shooter.spinUp();
-        //conveyor.drive();
-
-//        TRCNetworkData.updateDataPoint("Left Encoder", leftEncoder.getDistance());
-//        TRCNetworkData.updateDataPoint("Right Encoder", rightEncoder.getDistance());
-        TRCNetworkData.updateDataPoint("Gyro", gyro.getAngle());
-        //TRCNetworkData.updateDataPoint("dio0", dio0.get());
-        //TRCNetworkData.updateDataPoint("dio1", dio1.get());
-        TRCNetworkData.updateDataPoint("Roll", Robot.gyro.getRoll());
-        TRCNetworkData.updateDataPoint("Pitch", Robot.gyro.getPitch());
+        //TRCNetworkData.updateDataPoint("Gyro Yaw", gyro.getAngle());
+        //TRCNetworkData.updateDataPoint("Gyro Roll", Robot.gyro.getRoll());
+        //TRCNetworkData.updateDataPoint("Gyro Pitch", Robot.gyro.getPitch());
     }
 
     public static void main(String... args) throws InterruptedException

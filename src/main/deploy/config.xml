@@ -1,20 +1,37 @@
 <?xml version="1.0"?>
 <robot>
-    <controller type="Xbox360" port="0">
-        <!--<bind type="button" active="shooter.spinUp" inactive="shooter.spinDown">4</bind>
-        
-        <bind type="button" active="shooter.rotateUp" inactive="shooter.rotateStop">1</bind>-->
-        <bind type="button" active="intake.pullIn" inactive="intake.stop">2</bind>
-        <bind type="button" active="lift.driveReverse">4</bind>
+    <controller type="Generic" port="0">
+        <bind type="button" active="intake.driveForward" inactive="intake.fullStop">1</bind>
+        <bind type="button" active="intake.toggle">2</bind>
         <bind type="button" active="lift.driveForward">3</bind>
+        <bind type="button" active="lift.driveReverse">4</bind>
         <bind type="button" inactive="lift.fullStop">3,4</bind>
-        <bind type="button" active="conveyor.update">1</bind>
-        <bind type="button" active="shooter.driveFast">5</bind>
-        <bind type="button" active="shooter.driveSlow">6</bind>
-        <bind type="button" inactive="shooter.fullStop">5,6</bind>
-        <bind type="axis" name="driveForward">kLeftY</bind>
-        <bind type="axis" name="shooter">kLeftY</bind>
-        <bind type="axis" name="shooter2">kRightY</bind>
-		<bind type="dps" name="drive">kLeftX,driveForward,kRightX</bind>
+        <bind type="button" active="shooter.driveForward">5</bind>
+        <bind type="button" active="conveyor.driveForward">6</bind>
+        <bind type="button" inactive="shooter.fullStop">5</bind>
+        <bind type="button" active="conveyor.driveReverse">8</bind>
+        <bind type="button" inactive="conveyor.update">6,8</bind>
+        <bind type="button" active="drive.autoDrive" inactive="drive.manualDrive">9</bind>
+        <bind type="button" active="auto.playSound">10</bind>
     </controller>
+    <controller type="Xbox360" port="1">
+        <bind type="axis" name="FB">kLeftY</bind>
+        <bind type="axis" name="Twist">kRightX</bind>
+        <bind type="axis" name="unused">kLeftX</bind>
+		<bind type="dps" name="drive">Twist,FB,Twist</bind>
+        <bind type="button" active="drive.brake" inactive="drive.coast">1</bind>
+        <bind type="button" active="drive.setSlowOn" inactive="drive.setSlowOff">2</bind>
+        <bind type="button" active="auto.goBack">3</bind>
+    </controller>
+    <auto-path name="trenchballs">
+        <start x="0.0" y="120.0" angle="0.0"/>
+        <translation x="0.0" y="0.0" id="0"/>
+        <end x="27.75" y="314.57" angle="0.0" />
+    </auto-path>
+    <auto-path name="testpath">
+        <start x="0.0" y="0.0" angle="0.0" />
+        <translation x="0.5" y="0.5" id="0" />
+        <translation x="-0.5" y="0.5" id="1" />
+        <end x="0.0" y="1.5" angle="0.0" />
+    </auto-path>
 </robot>
