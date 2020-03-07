@@ -298,18 +298,6 @@ public class AutoManager
             {
                 double shooterAngle = shooterAngleEntry.getDouble(0.0);
                 if (shooterAngle == 0.0) { continue; }
-
-                if (Math.abs(m_shooter.getAngle() - shooterAngle) > Constants.SHOOTER_TOLERANCE_ANGLE)
-                {
-                    if (m_shooter.getAngle() - shooterAngle > 0.0)
-                    {
-                        m_shooter.rotateDown();
-                    }
-                    else if (m_shooter.getAngle() - shooterAngle < 0.0)
-                    {
-                        m_shooter.rotateUp();
-                    }
-                }
                 else
                 {
                     statusEntry.forceSetString("AIM");
@@ -320,7 +308,7 @@ public class AutoManager
                 double shooterRPM = shooterRPMEntry.getDouble(0.0);
                 if (shooterRPM == 0.0) { continue; }
 
-                if (Math.abs(m_shooter.getRPM() - shooterRPM) > Constants.SHOOTER_TOLERANCE_RPM)
+                if (Math.abs(m_shooter.getRPMForward() - shooterRPM) > Constants.SHOOTER_TOLERANCE_RPM)
                 {
                     m_shooter.driveForward();
                 }
@@ -369,7 +357,7 @@ public class AutoManager
         }
         Robot.lift.fullStop();
         Timer.delay(5.0);
-        while (Math.abs(Robot.shooter.getRPM() - Constants.SHOOTER_RPM_TARGET) > Constants.SHOOTER_TOLERANCE_RPM)
+        while (Math.abs(Robot.shooter.getRPMForward() - Constants.SHOOTER_RPM_TARGET_AB) > Constants.SHOOTER_TOLERANCE_RPM)
         {
             Robot.shooter.driveForward();
         }

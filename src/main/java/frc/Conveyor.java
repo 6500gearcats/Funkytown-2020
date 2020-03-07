@@ -63,7 +63,7 @@ public class Conveyor extends TRCDirectionalSystem
     {
         if (m_shooting)
         {
-            if (Math.abs(Robot.shooter.getRPM() - Constants.SHOOTER_RPM_TARGET) < Constants.SHOOTER_TOLERANCE_RPM)
+            if (Math.abs(Robot.shooter.getRPMForward() - Constants.SHOOTER_RPM_TARGET_AB) < Constants.SHOOTER_TOLERANCE_RPM)
             {
                 m_upper.set(Constants.CONVEYOR_UPPER_SPEED);
                 m_lower.set(Constants.CONVEYOR_LOWER_SPEED);

@@ -57,10 +57,12 @@ public class Robot extends TimedRobot
         TRCNetworkData.createDataPoint("Right Target Velocity");
         TRCNetworkData.createDataPoint("RPM 0");
         TRCNetworkData.createDataPoint("RPM 1");
+        TRCNetworkData.createDataPoint("RPM 2");
         TRCNetworkData.createDataPoint("FF 0");
         TRCNetworkData.createDataPoint("FF 1");
-        TRCNetworkData.createDataPoint("Pusher FF");
-        TRCNetworkData.createDataPoint("Pusher RPM");
+        TRCNetworkData.createDataPoint("FF 2");
+        TRCNetworkData.createDataPoint("AB RPM Target");
+        TRCNetworkData.createDataPoint("Ejector RPM Target");
         TRCNetworkData.createDataPoint("AIcmdL");
         TRCNetworkData.createDataPoint("AIcmdR");
         TRCNetworkData.createDataPoint("Ultrasonic");

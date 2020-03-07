@@ -16,10 +16,10 @@ public class Intake extends TRCDirectionalSystem
 {
     private TRCPneumaticSystem manipulator;
     private boolean dropped = true;
-    private Instant toggle_instant;
+    private Instant toggle_instant, speedSwap;
     private WPI_TalonSRX m_talon;
     private double speed = 0.0;
-    private boolean enabledd;
+    private boolean enabledd, speedOn;
 
     public Intake(int[] motorPorts, SpeedControllerType[] motorTypes, int[] solenoidPorts)
     {
@@ -29,6 +29,8 @@ public class Intake extends TRCDirectionalSystem
         m_talon.setInverted(true);
         raiseIntake();
         toggle_instant = Instant.now();
+        speedSwap = Instant.now();
+        speedOn = true;
         //this.dropped = false;
         //dropIntake();
         slow();
@@ -79,9 +81,32 @@ public class Intake extends TRCDirectionalSystem
         }
     }
 
+    public void update()
+    {
+        if (Duration.between(speedSwap, Instant.now()).toMillis() > 300 && speedOn)
+        {
+            speedSwap = Instant.now();
+            speedOn = !speedOn;
+        }
+        if (Duration.between(speedSwap, Instant.now()).toMillis() > 150 && !speedOn)
+        {
+            speedSwap = Instant.now();
+            speedOn = !speedOn;
+        }
+        if (speedOn)
+        {
+            speed = Constants.INTAKE_SPEED_SLOW;
+        }
+        else
+        {
+            speed = -Constants.INTAKE_SPEED_SLOW / 3;
+        }
+    }
+
     @Override
     public void driveForward()
     {
+        update();
         if (enabledd)
         {
             super.valueDrive(speed);
@@ -97,6 +122,7 @@ public class Intake extends TRCDirectionalSystem
     @Override
     public void driveReverse()
     {
+        update();
         if (enabledd)
         {
             super.valueDrive(-speed);

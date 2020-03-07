@@ -38,15 +38,24 @@ public class Shooter extends TRCDirectionalSystem
         }
 
         m_PIDs[0].setFF(0.000175);
-        m_PIDs[0].setP(0.00005);
+        m_PIDs[0].setP(0.0001);
         m_PIDs[1].setFF(0.000175);
-        m_PIDs[1].setP(0.00005);
+        m_PIDs[1].setP(0.0001);
         m_PIDs[1].setFF(0.000100);
         m_PIDs[1].setP(0.00004);
 
         TRCNetworkData.updateDataPoint("FF 0", 170);
         TRCNetworkData.updateDataPoint("FF 1", 180);
-        TRCNetworkData.updateDataPoint("FF 2", 100);
+        TRCNetworkData.updateDataPoint("FF 2", 160);
+        TRCNetworkData.updateDataPoint("AB RPM Target", Constants.SHOOTER_RPM_TARGET_AB);
+        TRCNetworkData.updateDataPoint("Ejector RPM Target", Constants.SHOOTER_RPM_TARGET_EJECTOR);
+
+        m_encoders[0].setPositionConversionFactor(1.0);
+        m_encoders[1].setPositionConversionFactor(1.0);
+        m_encoders[2].setPositionConversionFactor(1.0);
+        m_encoders[0].setVelocityConversionFactor(1.0);
+        m_encoders[1].setVelocityConversionFactor(1.0);
+        m_encoders[2].setVelocityConversionFactor(1.0);
     }
 
     public double getRPMForward()
@@ -85,5 +94,7 @@ public class Shooter extends TRCDirectionalSystem
         m_PIDs[0].setFF(TRCNetworkData.getDataPoint("FF 0") / 1000000.0);
         m_PIDs[1].setFF(TRCNetworkData.getDataPoint("FF 1") / 1000000.0);
         m_PIDs[2].setFF(TRCNetworkData.getDataPoint("FF 2") / 1000000.0);
+        Constants.SHOOTER_RPM_TARGET_AB = TRCNetworkData.getDataPoint("AB RPM Target");
+        Constants.SHOOTER_RPM_TARGET_EJECTOR = TRCNetworkData.getDataPoint("Ejector RPM Target");
     }
 }

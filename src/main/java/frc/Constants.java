@@ -70,14 +70,16 @@ public class Constants
 
     public final static double SHOOTER_TOLERANCE_RPM = 100.0;
     public final static double SHOOTER_TOLERANCE_ANGLE = 0.0;
-    public final static double SHOOTER_RPM_TARGET_AB = 3000.0;
-    public final static double SHOOTER_RPM_TARGET_EJECTOR = 3000.0;
+    // feet away | ejector rpm | ejector ff | ab rpm | ab ff
+    //     0     |     3150    |     160    |  ????  |  ???
+    public static double SHOOTER_RPM_TARGET_AB = 3000.0;
+    public static double SHOOTER_RPM_TARGET_EJECTOR = 3600.0;
     public final static double SHOOTER_RPM_IDLE = 0.0;
     public final static double SHOOTER_ANGLE_MULTIPLIER = 1.0;
     public final static double SHOOTER_ANGLE_INTERVAL = 5.0;
     public final static int SHOOTER_PORT_A = 20;
     public final static int SHOOTER_PORT_B = 21;
-    public final static int SHOOTER_PORT_EJECTOR = 7;
+    public final static int SHOOTER_PORT_EJECTOR = 22;
     public final static int SHOOTER_MOTOR_PORTS[] = {SHOOTER_PORT_A, SHOOTER_PORT_B, SHOOTER_PORT_EJECTOR};
     public final static SpeedControllerType SHOOTER_MOTOR_TYPES[] = {SpeedControllerType.CANSparkMax, SpeedControllerType.CANSparkMax, SpeedControllerType.CANSparkMax};
     
